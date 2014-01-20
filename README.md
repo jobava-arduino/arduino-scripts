@@ -22,6 +22,9 @@ unread messages.
 Minor setup is required for use:
 - A python script must be run on a host computer; this script will check the email account
 and communiate via USB Serial to the Arduino.
+- Configure email.py to include your information; username, password, and mail server address.
+
+The python script will then check for unread email messages and comunicate the number via USB Serial connection to the Arduino.
 
 LCD Hello World
 ---------------
