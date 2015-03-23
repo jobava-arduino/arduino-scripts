@@ -74,7 +74,7 @@ VERSION =	1.0
 # Arduino model. E.g. atmega328, mega, mega2560, uno.
 # Valid model names can be found in $(ARDUINO_DIR)/hardware/arduino/boards.txt
 # This must be set to a valid model name.
-ARDUINO_MODEL = uno
+ARDUINO_MODEL = micro
 #ARDUINO_MODEL = nano328  # Is set to a 168 CPU
 #ARDUINO_MODEL = mega
 
@@ -87,8 +87,8 @@ ARDUINO_MODEL = uno
 # BSD:   e.g. /dev/cuaU0
 # It is a good idea to use udev rules to create a device name that is constant,
 # based on the serial number etc. of the USB device.
-# See e.g. 97-avr-ftdi.rules from the same download location as this Makefile.
-PORT =		/dev/ttyACM0
+#PORT =		/dev/ttyACM1
+PORT =		/dev/serial/by-id/*Arduino*
 
 # Arduino version (e.g. 23 for 0023, or 105 for 1.0.5).
 # Make sure this matches ARDUINO_DIR below!
@@ -120,7 +120,7 @@ endif
 
 # User libraries (in ~/sketchbook/libraries/).
 # Give the name of the directory containing the library source files.
-USER_LIBDIR =	~/sketchbook/libraries
+USER_LIBDIR =	./libraries
 USER_LIBS =	
 
 # Additional pre-compiled libraries to link with.
