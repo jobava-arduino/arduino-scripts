@@ -78,6 +78,10 @@ ARDUINO_MODEL = uno
 #ARDUINO_MODEL = nano328  # Is set to a 168 CPU
 #ARDUINO_MODEL = mega
 
+# Arduino variant (for Arduino 1.0+).
+# Directory containing the pins_arduino.h file.
+#ARDUINO_VARIANT=$(ARDUINO_DIR)/hardware/arduino/avr/variants/micro
+
 # USB port the Arduino board is connected to.
 # Linux: e.g. /dev/ttyUSB0, or /dev/ttyACM0 for the Uno.
 # BSD:   e.g. /dev/cuaU0
@@ -103,10 +107,6 @@ AVRDUDE_PROGRAMMER = avr109
 
 # Arduino core sources.
 ARDUINO_CORE =	$(ARDUINO_DIR)/hardware/arduino/avr/cores/arduino
-
-# Arduino variant (for Arduino 1.0+).
-# Directory containing the pins_arduino.h file.
-ARDUINO_VARIANT=$(ARDUINO_DIR)/hardware/arduino/avr/variants/micro
 
 # Standard Arduino libraries used, e.g. EEPROM, LiquidCrystal.
 # Give the name of the directory containing the library source files.
@@ -188,8 +188,8 @@ RESETCMD ?=	stty
 # Set Arduino core sources location to default, if still unset.
 ARDUINO_CORE ?= $(ARDUINO_DIR)/hardware/arduino/avr/cores/arduino
 
-# Get the upload rate, CPU model, CPU frequency and avrdude programmer type
-# from the IDE files.
+# Get the upload rate, CPU model, CPU frequency, avrdude programmer type
+# and other variables from the IDE files.
 UPLOAD_RATE ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.upload.speed/ { s/.*=//; q }; d" \
 		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
@@ -204,6 +204,14 @@ F_CPU ?= $(shell \
 	)
 AVRDUDE_PROGRAMMER ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.upload.protocol/ { s/.*=//; q }; d" \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
+	)
+VID ?= $(shell \
+	sed "/$(ARDUINO_MODEL)\.build.vid/ { s/.*=//; q }; d" \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
+	)
+PID ?= $(shell \
+	sed "/$(ARDUINO_MODEL)\.build.pid/ { s/.*=//; q }; d" \
 		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
 	)
 
@@ -424,6 +432,10 @@ OPT_WARN_CXX =	$(OPT_WARN)
 OPT_OTHER =	
 # Save gcc temp files (pre-processor, assembler):
 #OPT_OTHER +=	-save-temps
+
+# Automatically enable build.extra_flags if needed
+# Used by Micro and other devices to fill in USB_PID and USB_VID
+OPT_OTHER +=	-DUSB_VID=$(VID) -DUSB_PID=$(PID)
 
 # Final combined.
 CFLAGS =	-mmcu=$(MCU) \
@@ -681,6 +693,8 @@ showvars2:
 	: ALLOBJ = "$(ALLOBJ)"
 	: ALLDEPS = "$(ALLDEPS)"
 	: VPATH = "$(VPATH)"
+	: VID = "$(VID)"
+	: PID = "$(PID)"
 
 mkout $(OUTPUT):
 	mkdir -p $(OUTPUT)
