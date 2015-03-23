@@ -89,7 +89,7 @@ PORT =		/dev/ttyACM0
 # Arduino version (e.g. 23 for 0023, or 105 for 1.0.5).
 # Make sure this matches ARDUINO_DIR below!
 #ARDUINO = 	23
-ARDUINO = 	105
+ARDUINO = 	161
 
 # Location of the official Arduino IDE.
 # E.g. /usr/local/arduino, or $(HOME)/arduino
@@ -98,14 +98,15 @@ ARDUINO = 	105
 ARDUINO_DIR =	/usr/share/arduino
 
 # Arduino 0.x based on 328P now need the new programmer protocol.
-#AVRDUDE_PROGRAMMER = arduino
+# Arudino 1.6+ uses the avr109 programmer by default
+AVRDUDE_PROGRAMMER = avr109
 
 # Arduino core sources.
-ARDUINO_CORE =	$(ARDUINO_DIR)/hardware/arduino/cores/arduino
+ARDUINO_CORE =	$(ARDUINO_DIR)/hardware/arduino/avr/cores/arduino
 
 # Arduino variant (for Arduino 1.0+).
 # Directory containing the pins_arduino.h file.
-ARDUINO_VARIANT=$(ARDUINO_DIR)/hardware/arduino/variants/standard
+ARDUINO_VARIANT=$(ARDUINO_DIR)/hardware/arduino/avr/variants/micro
 
 # Standard Arduino libraries used, e.g. EEPROM, LiquidCrystal.
 # Give the name of the directory containing the library source files.
@@ -185,25 +186,25 @@ TARFILE =	$(PROJECT)-$(VERSION).tar
 RESETCMD ?=	stty
 
 # Set Arduino core sources location to default, if still unset.
-ARDUINO_CORE ?= $(ARDUINO_DIR)/hardware/arduino/cores/arduino
+ARDUINO_CORE ?= $(ARDUINO_DIR)/hardware/arduino/avr/cores/arduino
 
 # Get the upload rate, CPU model, CPU frequency and avrdude programmer type
 # from the IDE files.
 UPLOAD_RATE ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.upload.speed/ { s/.*=//; q }; d" \
-		$(ARDUINO_DIR)/hardware/arduino/boards.txt \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
 	)
 MCU ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.build.mcu/ { s/.*=//; q }; d" \
-		$(ARDUINO_DIR)/hardware/arduino/boards.txt \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
 	)
 F_CPU ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.build.f_cpu/ { s/.*=//; q }; d" \
-		$(ARDUINO_DIR)/hardware/arduino/boards.txt \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
 	)
 AVRDUDE_PROGRAMMER ?= $(shell \
 	sed "/$(ARDUINO_MODEL)\.upload.protocol/ { s/.*=//; q }; d" \
-		$(ARDUINO_DIR)/hardware/arduino/boards.txt \
+		$(ARDUINO_DIR)/hardware/arduino/avr/boards.txt \
 	)
 
 # Try and guess PORT if it wasn't set previously.
@@ -226,12 +227,12 @@ endif
 # Default is "standard".
 ifeq ($(ARDUINO_VARIANT),)
 ifeq "$(ARDUINO_MODEL)" "mega"
-ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/variants/mega
+ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/avr/variants/mega
 else
 ifeq "$(ARDUINO_MODEL)" "micro"
-ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/variants/micro
+ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/avr/variants/micro
 else
-ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/variants/standard
+ARDUINO_VARIANT ?= $(ARDUINO_DIR)/hardware/arduino/avr/variants/standard
 endif
 endif
 endif
